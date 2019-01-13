@@ -3,6 +3,5 @@ npm-debug.log
 .DS_Store
 *.orig
 /.tmp
-/dist
 /test-failed-*.png
 /output
