@@ -15,7 +15,7 @@ export default class XLabels extends React.Component {
             days.push(moment(this.props.date));
         } else {
             const day = moment(this.props.date).startOf('week');
-            for (let i = 0; i < 7; i += 1) {
+            for (let i = 1; i < 6; i += 1) {
                 days.push(day.clone().add(i, 'day'));
             }
         }

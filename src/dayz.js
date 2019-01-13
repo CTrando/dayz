@@ -23,11 +23,11 @@ export default class Dayz extends React.Component {
         highlightDays:     PropTypes.oneOfType(
             [PropTypes.array, PropTypes.func],
         ),
-    }
+    };
 
     static defaultProps = {
-        display: 'month',
-    }
+        display: 'week',
+    };
 
     constructor(props) {
         super(props);
@@ -64,7 +64,9 @@ export default class Dayz extends React.Component {
     }
 
     get days() {
-        return Array.from(this.layout.range.by('days'));
+        let hello = Array.from(this.layout.range.by('days'));
+        hello = hello.slice(1, 6);
+        return hello;
     }
 
     renderDays() {
