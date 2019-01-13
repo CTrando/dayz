@@ -83,10 +83,9 @@ $dayz-event-text-colors: (
         display: flex;
         flex-direction: row;
         .day-label {
-            display: flex;
+            text-align: center;
             flex-grow: 1;
             flex-basis: 1px;
-            padding-left: 8px;
         }
     }
 
