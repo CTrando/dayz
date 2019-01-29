@@ -46,7 +46,7 @@ class DayzTestComponent extends React.Component {
         this.setState({ display: ev.target.value });
     }
 
-    onEventClick(ev, event) {
+    onEventClick(ev, event){
         event.set({ editing: !event.isEditing() });
     }
 
