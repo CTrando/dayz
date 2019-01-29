@@ -48,7 +48,6 @@
     position: relative; }
     .dayz .body .y-labels {
       position: absolute;
-      width: 100%;
       height: 100%;
       width: 60px;
       display: -webkit-box;

@@ -908,10 +908,17 @@
 
     renderLabels() {
       const day = moment$2();
-      return this.hours.map(hour => React.createElement("div", {
-        key: hour,
-        className: "hour"
-      }, day.hour(hour).format(this.props.timeFormat)));
+      return this.hours.map(hour => {
+        return React.createElement("div", {
+          className: "hour"
+        }, React.createElement("div", {
+          key: hour,
+          className: "hour-label"
+        }, day.hour(hour).format(this.props.timeFormat)), React.createElement("div", {
+          key: hour,
+          className: "hour-body"
+        }));
+      });
     }
 
     render() {
