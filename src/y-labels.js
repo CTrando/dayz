@@ -27,10 +27,10 @@ export default class YLabels extends React.Component {
         const day = moment();
         return this.hours.map((hour) => {
             return (
-                <div className="hour">
-                    <div key={hour} className="hour-label">{day.hour(hour)
+                <div key={hour} className="hour">
+                    <div key={`${hour} label`} className="hour-label">{day.hour(hour)
                         .format(this.props.timeFormat)}</div>
-                    <div key={hour} className="hour-body"/>
+                    <div key={`${hour} body`} className="hour-body"/>
                 </div>
             );
         });

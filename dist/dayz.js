@@ -910,12 +910,13 @@
       const day = moment$2();
       return this.hours.map(hour => {
         return React.createElement("div", {
+          key: hour,
           className: "hour"
         }, React.createElement("div", {
-          key: hour,
+          key: `${hour} label`,
           className: "hour-label"
         }, day.hour(hour).format(this.props.timeFormat)), React.createElement("div", {
-          key: hour,
+          key: `${hour} body`,
           className: "hour-body"
         }));
       });
