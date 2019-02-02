@@ -9,7 +9,9 @@ function cacheKey(day) {
 
 function highlightedDaysFinder(days) {
     const highlighted = Object.create(null);
-    days.forEach((d) => { highlighted[cacheKey(moment(d))] = true; });
+    days.forEach((d) => {
+        highlighted[cacheKey(moment(d))] = true;
+    });
     return day => (highlighted[cacheKey(day)] ? 'highlight' : false);
 }
 
@@ -35,7 +37,9 @@ export default class Layout {
         }
         let multiDayCount = 0;
 
-        if (!this.events) { this.events = new EventsCollection(); }
+        if (!this.events) {
+            this.events = new EventsCollection();
+        }
         const { range } = this;
         this.events.forEach((event) => {
             // we only care about events that are in the range we were provided
@@ -55,8 +59,10 @@ export default class Layout {
             return;
         }
         this.range = moment.range(
-            moment(this.date).startOf(this.display),
-            moment(this.date).endOf(this.display),
+            moment(this.date)
+                .startOf(this.display),
+            moment(this.date)
+                .endOf(this.display),
         );
 
         if (this.isDisplayingAsMonth) {
@@ -83,9 +89,10 @@ export default class Layout {
             classes.push(higlight);
         }
         const handlers = {};
-        Object.keys(this.dayEventHandlers || {}).forEach((k) => {
-            handlers[k] = ev => this.dayEventHandlers[k](day, ev);
-        });
+        Object.keys(this.dayEventHandlers || {})
+            .forEach((k) => {
+                handlers[k] = ev => this.dayEventHandlers[k](day, ev);
+            });
         return {
             className: classes.join(' '),
             'data-date': cacheKey(day),
@@ -98,17 +105,22 @@ export default class Layout {
         const style = (
             this.multiDayCount ? { flexBasis: this.multiDayCount * C.eventHeight } : { display: 'none' }
         );
-        return { className: 'all-day', style };
+        return {
+            className: 'all-day',
+            style
+        };
     }
 
     hourRange() {
         const range = [7, 19];
-        Array.from(this.range.by('days')).forEach((day) => {
-            this.forDay(day).forEach((duration) => {
-                range[0] = Math.min(duration.event.start.hour(), range[0]);
-                range[1] = Math.max(duration.event.end.hour(), range[1]);
+        Array.from(this.range.by('days'))
+            .forEach((day) => {
+                this.forDay(day)
+                    .forEach((duration) => {
+                        range[0] = Math.min(duration.event.start.hour(), range[0]);
+                        range[1] = Math.max(duration.event.end.hour(), range[1]);
+                    });
             });
-        });
         range[1] += 1;
         return range;
     }
@@ -123,7 +135,9 @@ export default class Layout {
             }
             day.add(1, 'day');
         }
-        const minLong = range => moment.max(start, range.start).diff(moment.min(day, range.end), 'minutes');
+
+        const minLong = range => moment.max(start, range.start)
+            .diff(moment.min(day, range.end), 'minutes');
         return weeklyEvents.sort((al, bl) => {
             const a = minLong(al.event.range());
             const b = minLong(bl.event.range());
@@ -132,36 +146,40 @@ export default class Layout {
     }
 
     calculateStacking() {
-        const firstOfWeek = this.range.start.clone().startOf('week');
+        const firstOfWeek = this.range.start.clone()
+            .startOf('week');
         do {
             const weeklyEvents = this.getEventsForWeek(firstOfWeek);
             for (let durationIndex = 0; durationIndex < weeklyEvents.length; durationIndex++) {
                 const duration = weeklyEvents[durationIndex];
-                // loop through each duration that is before this one
-                let ceilingIndex = 0;
-                for (let pi = durationIndex - 1; pi >= 0; pi--) {
-                    const prevDuration = weeklyEvents[pi];
-                    if (prevDuration.range.start.isSame(duration.range.start, 'd')) {
-                        ceilingIndex = pi + 1;
-                        break;
-                    }
-                }
 
-                for (let pi = ceilingIndex; pi < durationIndex; pi++) {
-                    const prevDuration = weeklyEvents[pi];
-
+                for (let i = 0; i < durationIndex; i++) {
+                    const prevDuration = weeklyEvents[i];
                     if (duration.range.overlaps(prevDuration.range)) {
                         duration.stack += 1;
                     }
                 }
             }
             firstOfWeek.add(7, 'day');
+
+            for (let durationIndex = weeklyEvents.length - 1; durationIndex > 0; durationIndex--) {
+                const duration = weeklyEvents[durationIndex];
+                const prevDuration = weeklyEvents[durationIndex - 1];
+
+                if (duration.range.overlaps(prevDuration.range)) {
+                    duration.maxStack = Math.max(duration.maxStack, prevDuration.maxStack, duration.stack + 1, prevDuration.stack + 1);
+                    prevDuration.maxStack = duration.maxStack;
+                }
+            }
+
         } while (!firstOfWeek.isAfter(this.range.end));
     }
 
     // This is the default implementation.
     // It will be overwritten if highlightDays option is provided
-    isDayHighlighted() { return false; }
+    isDayHighlighted() {
+        return false;
+    }
 
     isDateOutsideRange(date) {
         return (this.isDisplayingAsMonth && !this.date.isSame(date, 'month'));
@@ -180,9 +198,11 @@ export default class Layout {
     // other durations must break at week boundaries, with indicators if they were/are continuing
     calculateDurations(event) {
         const end = moment.min(this.range.end, event.range().end);
-        const start = moment.max(this.range.start, event.range().start).clone();
+        const start = moment.max(this.range.start, event.range().start)
+            .clone();
         do {
-            const range = moment.range(start, start.clone().endOf('week'));
+            const range = moment.range(start, start.clone()
+                .endOf('week'));
             const duration = new Duration(this, event, range);
             this.addToCache(start, duration);
             // go to first day of next week

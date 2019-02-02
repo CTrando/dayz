@@ -12,13 +12,11 @@ export default class Event extends React.Component {
         editComponent: PropTypes.func,
         onClick:       PropTypes.func,
         onDoubleClick: PropTypes.func,
-    }
+    };
 
     constructor(props) {
         super(props);
-        [
-            'onClick', 'onDoubleClick', 'onDoubleClick', 'onDragStart',
-        ].forEach((ev) => {
+        ['onClick', 'onDoubleClick', 'onDoubleClick', 'onDragStart',].forEach((ev) => {
             this[ev] = this[ev].bind(this);
         });
     }

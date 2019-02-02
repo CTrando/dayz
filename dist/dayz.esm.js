@@ -103,6 +103,7 @@ class EventDuration {
     this.layout = layout;
     this.event = event;
     this.stack = 0;
+    this.maxStack = 1;
     this.displayRange = displayRange;
     this.startsBefore = event.start.isBefore(displayRange.start);
     this.endsAfter = event.end.isAfter(displayRange.end);
@@ -158,9 +159,13 @@ class EventDuration {
     const inday = this.layout.minutesInDay();
     const top = `${(start / inday * 100).toFixed(2)}%`;
     const bottom = `${(100 - end / inday * 100).toFixed(2)}%`;
+    const left = `${(this.stack / this.maxStack * 100).toFixed(2)}%`;
+    const width = `${(100 / this.maxStack).toFixed(2)}%`;
     return {
+      width,
       top,
-      bottom
+      bottom,
+      left
     };
   }
 
@@ -540,21 +545,10 @@ class Layout {
       const weeklyEvents = this.getEventsForWeek(firstOfWeek);
 
       for (let durationIndex = 0; durationIndex < weeklyEvents.length; durationIndex++) {
-        const duration = weeklyEvents[durationIndex]; // loop through each duration that is before this one
+        const duration = weeklyEvents[durationIndex];
 
-        let ceilingIndex = 0;
-
-        for (let pi = durationIndex - 1; pi >= 0; pi--) {
-          const prevDuration = weeklyEvents[pi];
-
-          if (prevDuration.range.start.isSame(duration.range.start, 'd')) {
-            ceilingIndex = pi + 1;
-            break;
-          }
-        }
-
-        for (let pi = ceilingIndex; pi < durationIndex; pi++) {
-          const prevDuration = weeklyEvents[pi];
+        for (let i = 0; i < durationIndex; i++) {
+          const prevDuration = weeklyEvents[i];
 
           if (duration.range.overlaps(prevDuration.range)) {
             duration.stack += 1;
@@ -563,6 +557,16 @@ class Layout {
       }
 
       firstOfWeek.add(7, 'day');
+
+      for (let durationIndex = weeklyEvents.length - 1; durationIndex > 0; durationIndex--) {
+        const duration = weeklyEvents[durationIndex];
+        const prevDuration = weeklyEvents[durationIndex - 1];
+
+        if (duration.range.overlaps(prevDuration.range)) {
+          duration.maxStack = Math.max(duration.maxStack, prevDuration.maxStack, duration.stack + 1, prevDuration.stack + 1);
+          prevDuration.maxStack = duration.maxStack;
+        }
+      }
     } while (!firstOfWeek.isAfter(this.range.end));
   } // This is the default implementation.
   // It will be overwritten if highlightDays option is provided

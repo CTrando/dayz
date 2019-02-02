@@ -8,6 +8,7 @@ export default class EventDuration {
         this.layout = layout;
         this.event = event;
         this.stack = 0;
+        this.maxStack = 1;
         this.displayRange = displayRange;
         this.startsBefore = event.start.isBefore(displayRange.start);
         this.endsAfter = event.end.isAfter(displayRange.end);
@@ -62,9 +63,13 @@ export default class EventDuration {
         start = Math.max(start - startOffset, 0);
         end = Math.min(end, endOffset) - startOffset;
         const inday = this.layout.minutesInDay();
-        const top = `${((start / inday) * 100).toFixed(2)}%`;
+        const top = `${((start / inday) *100).toFixed(2)}%`;
         const bottom = `${(100 - ((end / inday) * 100)).toFixed(2)}%`;
-        return { top, bottom };
+
+        const left = `${((this.stack / this.maxStack) * 100).toFixed(2)}%`;
+        const width = `${((100 / this.maxStack)).toFixed(2)}%`;
+
+        return { width, top, bottom, left};
     }
 
     isResizable() {

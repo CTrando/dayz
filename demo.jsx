@@ -24,19 +24,51 @@ class DayzTestComponent extends React.Component {
                 {
                     content: '9am - 2pm (resizable)',
                     resizable: { step: 15 },
-                    range: moment.range(moment('2019-01-14')
-                        .hour(9),
-                    moment('2019-01-14')
-                        .hour(14)),
+                    range: moment.range(moment('2019-02-01')
+                            .hour(9),
+                        moment('2019-02-01')
+                            .hour(14)),
+                },
+                {
+                    content: '10am - 2pm (resizable)',
+                    resizable: { step: 15 },
+                    range: moment.range(moment('2019-02-01')
+                            .hour(10),
+                        moment('2019-02-01')
+                            .hour(14)),
+                },
+                {
+                    content: '10am - 2pm (resizable)',
+                    resizable: { step: 15 },
+                    range: moment.range(moment('2019-02-01')
+                            .hour(10),
+                        moment('2019-02-01')
+                            .hour(14)),
+                },
+                {
+                    content: '10am - 2pm (resizable)',
+                    resizable: { step: 15 },
+                    range: moment.range(moment('2019-02-01')
+                            .hour(10),
+                        moment('2019-02-01')
+                            .hour(14)),
                 },
 
                 {
+                    content: '10am - 2pm (resizable)',
+                    resizable: { step: 15 },
+                    range: moment.range(moment('2019-02-01')
+                            .hour(12),
+                        moment('2019-02-01')
+                            .hour(16)),
+                },
+                {
                     content: '8am - 8pm (non-resizable)',
                     range: moment.range(moment('2015-09-07')
-                        .hour(8),
-                    moment('2015-09-07')
-                        .hour(21)
-                        .minutes(40)),
+                            .hour(8),
+                        moment('2015-09-07')
+                            .hour(21)
+                            .minutes(40)),
                 },
             ]),
         };
@@ -46,7 +78,7 @@ class DayzTestComponent extends React.Component {
         this.setState({ display: ev.target.value });
     }
 
-    onEventClick(ev, event){
+    onEventClick(ev, event) {
         event.set({ editing: !event.isEditing() });
     }
 
@@ -96,25 +128,25 @@ class DayzTestComponent extends React.Component {
                 <div className="tools">
                     <label>
                         Month: <input type="radio"
-                            name="style" value="month" onChange={this.changeDisplay}
-                            checked={'month' === this.state.display}/>
+                                      name="style" value="month" onChange={this.changeDisplay}
+                                      checked={'month' === this.state.display}/>
                     </label><label>
                     Week: <input type="radio"
-                            name="style" value="week" onChange={this.changeDisplay}
-                            checked={'week' === this.state.display}/>
-                    </label><label>
+                                 name="style" value="week" onChange={this.changeDisplay}
+                                 checked={'week' === this.state.display}/>
+                </label><label>
                     Day: <input type="radio"
-                            name="style" value="day" onChange={this.changeDisplay}
-                            checked={'day' === this.state.display}/>
-                    </label>
+                                name="style" value="day" onChange={this.changeDisplay}
+                                checked={'day' === this.state.display}/>
+                </label>
                 </div>
 
                 <Dayz {...this.state}
-                    date={moment()}
-                    displayHours={[6, 22]}
-                    onEventResize={this.onEventResize}
-                    editComponent={this.editComponent}
-                    onDayDoubleClick={this.addEvent}
+                      date={moment()}
+                      displayHours={[6, 22]}
+                      onEventResize={this.onEventResize}
+                      editComponent={this.editComponent}
+                      onDayDoubleClick={this.addEvent}
                 >
                 </Dayz>
             </div>
