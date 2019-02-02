@@ -53,6 +53,43 @@ class DayzTestComponent extends React.Component {
                         moment('2019-02-01')
                             .hour(14)),
                 },
+                {
+                    content: 'test',
+                    range: moment.range(moment('2019-01-28')
+                            .hour(8),
+                        moment('2019-01-28')
+                            .hour(9)),
+                },
+                {
+                    content: 'test2',
+                    range: moment.range(moment('2019-01-28')
+                            .hour(8),
+                        moment('2019-01-28')
+                            .hour(9)),
+                },
+
+                {
+                    content: 'test3',
+                    range: moment.range(moment('2019-01-28')
+                            .hour(15),
+                        moment('2019-01-28')
+                            .hour(20)),
+                },
+
+                {
+                    content: 'test',
+                    range: moment.range(moment('2019-01-29')
+                            .hour(8),
+                        moment('2019-01-29')
+                            .hour(9)),
+                },
+                {
+                    content: 'test2',
+                    range: moment.range(moment('2019-01-29')
+                            .hour(8),
+                        moment('2019-01-29')
+                            .hour(9)),
+                },
 
                 {
                     content: '10am - 2pm (resizable)',
@@ -122,6 +159,43 @@ class DayzTestComponent extends React.Component {
     }
 
     render() {
+        let newEvents = new Dayz.EventsCollection([
+            {
+                content: 'test',
+                range: moment.range(moment('2019-01-28')
+                        .hour(8),
+                    moment('2019-01-28')
+                        .hour(9)),
+            },
+            {
+                content: 'test2',
+                range: moment.range(moment('2019-01-28')
+                        .hour(8),
+                    moment('2019-01-28')
+                        .hour(9)),
+            },
+            {
+                content: 'test3',
+                range: moment.range(moment('2019-01-28')
+                        .hour(18),
+                    moment('2019-01-28')
+                        .hour(19)),
+            },
+
+            {
+                content: 'test3',
+                range: moment.range(moment('2019-01-28')
+                        .hour(8),
+                    moment('2019-01-28')
+                        .hour(9)),
+            },
+
+        ]);
+
+        setTimeout(() => {
+            this.setState({ events: newEvents });
+        }, 3000);
+
         return (
             <div className="dayz-test-wrapper">
 
@@ -143,7 +217,7 @@ class DayzTestComponent extends React.Component {
 
                 <Dayz {...this.state}
                       date={moment()}
-                      displayHours={[6, 22]}
+                      displayHours={[8, 22]}
                       onEventResize={this.onEventResize}
                       editComponent={this.editComponent}
                       onDayDoubleClick={this.addEvent}
@@ -156,6 +230,17 @@ class DayzTestComponent extends React.Component {
 }
 
 
-const div = document.createElement('div');
-document.body.appendChild(div);
-render(React.createElement(DayzTestComponent, {}), div);
+const
+    div = document.createElement('div');
+document
+    .body
+    .appendChild(div);
+
+render(React
+
+        .createElement(DayzTestComponent, {})
+
+    ,
+    div
+)
+;

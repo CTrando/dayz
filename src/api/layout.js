@@ -146,6 +146,7 @@ export default class Layout {
     }
 
     calculateStacking() {
+        console.log('STACKING');
         const firstOfWeek = this.range.start.clone()
             .startOf('week');
         do {
@@ -162,16 +163,24 @@ export default class Layout {
             }
             firstOfWeek.add(7, 'day');
 
-            for (let durationIndex = weeklyEvents.length - 1; durationIndex > 0; durationIndex--) {
+            for (let durationIndex = 0; durationIndex < weeklyEvents.length; durationIndex++) {
                 const duration = weeklyEvents[durationIndex];
-                const prevDuration = weeklyEvents[durationIndex - 1];
 
-                if (duration.range.overlaps(prevDuration.range)) {
-                    duration.maxStack = Math.max(duration.maxStack, prevDuration.maxStack, duration.stack + 1, prevDuration.stack + 1);
-                    prevDuration.maxStack = duration.maxStack;
+                let maxStack = -1;
+                for (let i = 0; i < durationIndex; i++) {
+                    const prevDuration = weeklyEvents[i];
+                    if (duration.range.overlaps(prevDuration.range)) {
+                        maxStack = Math.max(duration.maxStack, prevDuration.maxStack, duration.stack + 1, prevDuration.stack + 1);
+                    }
+                }
+                duration.maxStack = maxStack;
+                for (let i = 0; i < durationIndex; i++) {
+                    const prevDuration = weeklyEvents[i];
+                    if (duration.range.overlaps(prevDuration.range)) {
+                        prevDuration.maxStack = maxStack;
+                    }
                 }
             }
-
         } while (!firstOfWeek.isAfter(this.range.end));
     }
 
