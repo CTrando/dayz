@@ -108,7 +108,7 @@
       this.layout = layout;
       this.event = event;
       this.stack = 0;
-      this.maxStack = 1;
+      this.maxStack = 0;
       this.displayRange = displayRange;
       this.startsBefore = event.start.isBefore(displayRange.start);
       this.endsAfter = event.end.isAfter(displayRange.end);
@@ -165,7 +165,7 @@
       const top = `${(start / inday * 100).toFixed(2)}%`;
       const bottom = `${(100 - end / inday * 100).toFixed(2)}%`;
       const left = `${(this.stack / this.maxStack * 100).toFixed(2)}%`;
-      const width = `${(100 / this.maxStack).toFixed(2)}%`;
+      const width = `${(100 / this.maxStack * this.colSpan).toFixed(2)}%`;
       return {
         width,
         top,
@@ -448,7 +448,7 @@
         }
       });
       this.multiDayCount = multiDayCount;
-      this.calculateStacking();
+      this.doLayout();
     }
 
     calculateRange() {
@@ -520,72 +520,96 @@
       return range;
     }
 
-    getEventsForWeek(start) {
-      const day = start.clone();
+    getDurationsForWeek(start) {
+      const day = start.clone(); // start on monday
+
+      day.add(1, 'day');
       const weeklyEvents = [];
-
-      for (let i = 0; i < 7; i++) {
-        const durations = this.forDay(day);
-
-        for (let li = 0, length = durations.length; li < length; li += 1) {
-          weeklyEvents.push(durations[li]);
-        }
-
-        day.add(1, 'day');
-      }
 
       const minLong = range => moment$2.max(start, range.start).diff(moment$2.min(day, range.end), 'minutes');
 
-      return weeklyEvents.sort((al, bl) => {
-        const a = minLong(al.event.range());
-        const b = minLong(bl.event.range());
-        return a === b ? 0 : a > b ? 1 : -1; // eslint-disable-line no-nested-ternary
-      });
+      for (let i = 0; i < 6; i++) {
+        // sorting events per day
+        let eventsPerDay = this.forDay(day);
+        eventsPerDay = eventsPerDay.sort((al, bl) => {
+          const a = minLong(al.event.range());
+          const b = minLong(bl.event.range());
+          return a === b ? 0 : a > b ? 1 : -1; // eslint-disable-line no-nested-ternary
+        });
+        weeklyEvents.push(eventsPerDay);
+        day.add(1, 'day');
+      }
+
+      return weeklyEvents;
     }
 
-    calculateStacking() {
-      console.log('STACKING');
+    layoutDay(durationPerDay) {
+      // columns is a 2D array storing lists of events per column
+      let columns = [];
+
+      for (let duration of durationPerDay) {
+        let curColumn = null;
+
+        for (let durationsPerColumn of columns) {
+          if (durationsPerColumn.length === 0) {
+            break;
+          }
+
+          let lastDuration = durationsPerColumn[durationsPerColumn.length - 1];
+
+          if (!lastDuration.range.overlaps(duration.range)) {
+            curColumn = durationsPerColumn;
+            break;
+          }
+        }
+
+        if (curColumn) {
+          curColumn.push(duration);
+        } else {
+          columns.push([duration]);
+        }
+      }
+
+      return columns;
+    }
+
+    getColSpan(checking, columnLayout, start) {
+      let colSpan = 1;
+
+      for (let i = start + 1; i < columnLayout.length; i++) {
+        for (let event of columnLayout[i]) {
+          if (event.range.overlaps(checking.range)) return colSpan;
+        }
+
+        colSpan++;
+      }
+
+      return colSpan;
+    }
+
+    setStackOrder(columnLayout) {
+      for (let i = 0; i < columnLayout.length; i++) {
+        for (let event of columnLayout[i]) {
+          event.stack = i;
+          event.maxStack = columnLayout.length;
+          event.colSpan = this.getColSpan(event, columnLayout, i);
+        }
+      }
+    }
+
+    doLayout() {
       const firstOfWeek = this.range.start.clone().startOf('week');
 
       do {
-        const weeklyEvents = this.getEventsForWeek(firstOfWeek);
+        const weeklyDurations = this.getDurationsForWeek(firstOfWeek);
+        console.log(weeklyDurations);
 
-        for (let durationIndex = 0; durationIndex < weeklyEvents.length; durationIndex++) {
-          const duration = weeklyEvents[durationIndex];
-
-          for (let i = 0; i < durationIndex; i++) {
-            const prevDuration = weeklyEvents[i];
-
-            if (duration.range.overlaps(prevDuration.range)) {
-              duration.stack += 1;
-            }
-          }
+        for (let day = 0; day < weeklyDurations.length; day++) {
+          let columnLayout = this.layoutDay(weeklyDurations[day]);
+          this.setStackOrder(columnLayout);
         }
 
         firstOfWeek.add(7, 'day');
-
-        for (let durationIndex = 0; durationIndex < weeklyEvents.length; durationIndex++) {
-          const duration = weeklyEvents[durationIndex];
-          let maxStack = -1;
-
-          for (let i = 0; i < durationIndex; i++) {
-            const prevDuration = weeklyEvents[i];
-
-            if (duration.range.overlaps(prevDuration.range)) {
-              maxStack = Math.max(duration.maxStack, prevDuration.maxStack, duration.stack + 1, prevDuration.stack + 1);
-            }
-          }
-
-          duration.maxStack = maxStack;
-
-          for (let i = 0; i < durationIndex; i++) {
-            const prevDuration = weeklyEvents[i];
-
-            if (duration.range.overlaps(prevDuration.range)) {
-              prevDuration.maxStack = maxStack;
-            }
-          }
-        }
       } while (!firstOfWeek.isAfter(this.range.end));
     } // This is the default implementation.
     // It will be overwritten if highlightDays option is provided

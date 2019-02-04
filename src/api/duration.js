@@ -8,7 +8,7 @@ export default class EventDuration {
         this.layout = layout;
         this.event = event;
         this.stack = 0;
-        this.maxStack = 1;
+        this.maxStack = 0;
         this.displayRange = displayRange;
         this.startsBefore = event.start.isBefore(displayRange.start);
         this.endsAfter = event.end.isAfter(displayRange.end);
@@ -67,7 +67,7 @@ export default class EventDuration {
         const bottom = `${(100 - ((end / inday) * 100)).toFixed(2)}%`;
 
         const left = `${((this.stack / this.maxStack) * 100).toFixed(2)}%`;
-        const width = `${((100 / this.maxStack)).toFixed(2)}%`;
+        const width = `${((100 / this.maxStack) * this.colSpan).toFixed(2)}%`;
 
         return { width, top, bottom, left};
     }

@@ -99,7 +99,7 @@ describe('Layout calculations', () => {
         });
 
         it('calculates stacking for a multi-day plus singles', () => {
-            const forWeek = layout.getEventsForWeek(
+            const forWeek = layout.getDurationsForWeek(
                 moment('2018-11-11T13:00:00.000Z'),
             );
             expect(forWeek).toHaveLength(3);
