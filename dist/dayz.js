@@ -534,6 +534,7 @@
         eventsPerDay = eventsPerDay.sort((al, bl) => {
           const a = minLong(al.event.range());
           const b = minLong(bl.event.range());
+          if (a === b && al.event.breakTie) return al.event.breakTie(bl.event);
           return a === b ? 0 : a > b ? 1 : -1; // eslint-disable-line no-nested-ternary
         });
         weeklyEvents.push(eventsPerDay);
