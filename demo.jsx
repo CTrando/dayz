@@ -109,40 +109,6 @@ class DayzTestComponent extends React.Component {
                 },
             ]),
         };
-        this.state.events = new Dayz.EventsCollection([
-            {
-                content: 'test',
-                range: moment.range(moment('2019-02-04')
-                        .hour(8),
-                    moment('2019-02-04')
-                        .hour(9)),
-            },
-            {
-                content: 'test2',
-                range: moment.range(moment('2019-02-04')
-                        .hour(8),
-                    moment('2019-02-04')
-                        .hour(9)),
-            },
-            {
-                content: 'test3',
-                range: moment.range(moment('2019-02-04')
-                        .hour(18),
-                    moment('2019-02-04')
-                        .hour(19)),
-            },
-
-            {
-                content: 'test3',
-                range: moment.range(moment('2019-02-04')
-                        .hour(8),
-                    moment('2019-02-04')
-                        .hour(9)),
-            },
-
-        ]);
-
-
     }
 
     changeDisplay(ev) {
@@ -160,6 +126,8 @@ class DayzTestComponent extends React.Component {
     }
 
     addEvent(ev, date) {
+        console.log(this.state.events);
+        console.log(date);
         this.state.events.add({
             content: `Event ${COUNT++}`,
             resizable: true,
@@ -167,6 +135,7 @@ class DayzTestComponent extends React.Component {
                 .add(1, 'hour')
                 .add(45, 'minutes')),
         });
+        console.log(this.state.events);
     }
 
     editComponent(props) {
@@ -193,7 +162,6 @@ class DayzTestComponent extends React.Component {
     }
 
     render() {
-
         return (
             <div className="dayz-test-wrapper">
 
@@ -214,7 +182,7 @@ class DayzTestComponent extends React.Component {
                 </div>
 
                 <Dayz {...this.state}
-                      date={moment()}
+                      date={moment('2019-01-28')}
                       displayHours={[8, 22]}
                       onEventResize={this.onEventResize}
                       editComponent={this.editComponent}

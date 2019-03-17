@@ -1,9 +1,9 @@
-import React     from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import Layout    from './api/layout';
-import Day       from './day';
-import XLabels   from './x-labels';
-import YLabels   from './y-labels';
+import Layout from './api/layout';
+import Day from './day';
+import XLabels from './x-labels';
+import YLabels from './y-labels';
 import EventsCollection from './api/events-collection';
 
 export default class Dayz extends React.Component {
@@ -11,16 +11,17 @@ export default class Dayz extends React.Component {
     static EventsCollection = EventsCollection;
 
     static propTypes = {
-        date:              PropTypes.object.isRequired,
-        events:            PropTypes.instanceOf(EventsCollection),
-        display:           PropTypes.oneOf(['month', 'week', 'day']),
-        timeFormat:        PropTypes.string,
-        displayHours:      PropTypes.array,
-        onEventClick:      PropTypes.func,
-        editComponent:     PropTypes.func,
-        onEventResize:     PropTypes.func,
-        dayEventHandlers:  PropTypes.object,
-        highlightDays:     PropTypes.oneOfType(
+        date: PropTypes.object.isRequired,
+        events: PropTypes.instanceOf(EventsCollection),
+        display: PropTypes.oneOf(['month', 'week', 'day']),
+        timeFormat: PropTypes.string,
+        displayHours: PropTypes.array,
+        onEventClick: PropTypes.func,
+        editComponent: PropTypes.func,
+        onEventResize: PropTypes.func,
+        onDayClick: PropTypes.func,
+        onDayDoubleClick: PropTypes.func,
+        highlightDays: PropTypes.oneOfType(
             [PropTypes.array, PropTypes.func],
         ),
     };
@@ -47,11 +48,14 @@ export default class Dayz extends React.Component {
     }
 
     detachEventBindings() {
-        if (this.props.events) { this.props.events.off('change', this.onEventAdd); }
+        if (this.props.events) {
+            this.props.events.off('change', this.onEventAdd);
+        }
     }
 
     onEventsChange() {
         this.forceUpdate();
+        this.layoutFromProps();
     }
 
     layoutFromProps() {
@@ -77,7 +81,8 @@ export default class Dayz extends React.Component {
                 position={index}
                 layout={this.layout}
                 editComponent={this.props.editComponent}
-                handlers={this.props.dayEventHandlers}
+                onClick={this.props.onDayClick}
+                onDoubleClick={this.props.onDayDoubleClick}
                 eventHandlers={this.props.eventHandlers}
                 onEventClick={this.props.onEventClick}
                 onEventResize={this.props.onEventResize}
@@ -89,7 +94,7 @@ export default class Dayz extends React.Component {
         const classes = ['dayz', this.props.display];
         return (
             <div className={classes.join(' ')}>
-                <XLabels date={this.props.date} display={this.props.display} />
+                <XLabels date={this.props.date} display={this.props.display}/>
                 <div className="body">
                     <YLabels
                         layout={this.layout}

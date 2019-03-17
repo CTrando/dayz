@@ -1,29 +1,26 @@
-import React     from 'react';
-import ReactDOM  from 'react-dom';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
-import Event     from './event';
-import Layout    from './api/layout';
-import Label     from './label';
+import Event from './event';
+import Layout from './api/layout';
+import Label from './label';
 
 const IsDayClass = new RegExp('(\\s|^)(events|day|label)(\\s|$)');
 
 export default class Day extends React.Component {
 
     static propTypes = {
-        day:            PropTypes.object.isRequired,
-        layout:         PropTypes.instanceOf(Layout).isRequired,
-        handlers:       PropTypes.object,
-        position:       PropTypes.number.isRequired,
-        highlight:      PropTypes.func,
-        onEventClick:   PropTypes.func,
-        onEventResize:  PropTypes.func,
-        editComponent:  PropTypes.func,
+        day: PropTypes.object.isRequired,
+        layout: PropTypes.instanceOf(Layout).isRequired,
+        onClick: PropTypes.func,
+        onDoubleClick: PropTypes.func,
+        position: PropTypes.number.isRequired,
+        highlight: PropTypes.func,
+        onEventClick: PropTypes.func,
+        onEventResize: PropTypes.func,
+        editComponent: PropTypes.func,
         onEventDoubleClick: PropTypes.func,
-    }
-
-    static defaultProps = {
-        handlers: {},
-    }
+    };
 
     constructor() {
         super();
@@ -36,13 +33,14 @@ export default class Day extends React.Component {
     }
 
     get boundingBox() {
-        return ReactDOM.findDOMNode(this.refs.events || this.refs.root).getBoundingClientRect();
+        return ReactDOM.findDOMNode(this.refs.events || this.refs.root)
+            .getBoundingClientRect();
     }
 
     onClickHandler(ev, handler) {
         if (!handler || !IsDayClass.test(ev.target.className)
             || (this.lastMouseUp
-              && (this.lastMouseUp < (new Date()).getMilliseconds() + 100)
+                && (this.lastMouseUp < (new Date()).getMilliseconds() + 100)
             )) {
             return;
         }
@@ -54,26 +52,34 @@ export default class Day extends React.Component {
         );
         const hours = this.props.layout.displayHours[0]
             + ((this.props.layout.minutesInDay() * perc) / 60);
-        handler.call(this, ev, this.props.day.clone().startOf('day').add(hours, 'hour'));
+        handler.call(this, ev, this.props.day.clone()
+            .startOf('day')
+            .add(hours, 'hour'));
     }
 
     onClick(ev) {
-        this.onClickHandler(ev, this.props.handlers.onClick);
+        this.onClickHandler(ev, this.props.onClick);
     }
 
     onDoubleClick(ev) {
-        this.onClickHandler(ev, this.props.handlers.onDoubleClick);
+        this.onClickHandler(ev, this.props.onDoubleClick);
     }
 
     onDragStart(resize, eventLayout) {
         eventLayout.setIsResizing(true);
         const bounds = this.boundingBox;
-        Object.assign(resize, { eventLayout, height: bounds.height, top: bounds.top });
+        Object.assign(resize, {
+            eventLayout,
+            height: bounds.height,
+            top: bounds.top
+        });
         this.setState({ resize });
     }
 
     onMouseMove(ev) {
-        if (!this.state.resize) { return; }
+        if (!this.state.resize) {
+            return;
+        }
         const coord = ev.clientY - this.state.resize.top;
         this.state.resize.eventLayout.adjustEventTime(
             this.state.resize.type, coord, this.state.resize.height,
@@ -82,7 +88,9 @@ export default class Day extends React.Component {
     }
 
     onMouseUp(ev) {
-        if (!this.state.resize) { return; }
+        if (!this.state.resize) {
+            return;
+        }
         this.state.resize.eventLayout.setIsResizing(false);
         setTimeout(() => this.setState({ resize: false }), 1);
         if (this.props.onEventResize) {
@@ -94,23 +102,24 @@ export default class Day extends React.Component {
     renderEvents() {
         const asMonth = this.props.layout.isDisplayingAsMonth;
         const singleDayEvents = [];
-        const allDayEvents    = [];
+        const allDayEvents = [];
         const onMouseMove = asMonth ? null : this.onMouseMove;
-        this.props.layout.forDay(this.props.day).forEach((duration) => {
-            const event = (
-                <Event
-                    duration={duration}
-                    key={duration.key()}
-                    day={this.props.day}
-                    parent={this}
-                    onDragStart={this.onDragStart}
-                    onClick={this.props.onEventClick}
-                    editComponent={this.props.editComponent}
-                    onDoubleClick={this.props.onEventDoubleClick}
-                />
-            );
-            (duration.event.isSingleDay() ? singleDayEvents : allDayEvents).push(event);
-        });
+        this.props.layout.forDay(this.props.day)
+            .forEach((duration) => {
+                const event = (
+                    <Event
+                        duration={duration}
+                        key={duration.key()}
+                        day={this.props.day}
+                        parent={this}
+                        onDragStart={this.onDragStart}
+                        onClick={this.props.onEventClick}
+                        editComponent={this.props.editComponent}
+                        onDoubleClick={this.props.onEventDoubleClick}
+                    />
+                );
+                (duration.event.isSingleDay() ? singleDayEvents : allDayEvents).push(event);
+            });
         const events = [];
         if (allDayEvents.length || !asMonth) {
             events.push(
