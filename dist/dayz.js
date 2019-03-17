@@ -792,11 +792,11 @@
     }
 
     onClick(ev) {
-      this.onClickHandler(ev, this.props.handlers.onClick);
+      this.onClickHandler(ev, this.props.onClick);
     }
 
     onDoubleClick(ev) {
-      this.onClickHandler(ev, this.props.handlers.onDoubleClick);
+      this.onClickHandler(ev, this.props.onDoubleClick);
     }
 
     onDragStart(resize, eventLayout) {
@@ -895,16 +895,14 @@
   Day.propTypes = {
     day: PropTypes.object.isRequired,
     layout: PropTypes.instanceOf(Layout).isRequired,
-    handlers: PropTypes.object,
+    onClick: PropTypes.func,
+    onDoubleClick: PropTypes.func,
     position: PropTypes.number.isRequired,
     highlight: PropTypes.func,
     onEventClick: PropTypes.func,
     onEventResize: PropTypes.func,
     editComponent: PropTypes.func,
     onEventDoubleClick: PropTypes.func
-  };
-  Day.defaultProps = {
-    handlers: {}
   };
 
   class XLabels extends React.Component {
@@ -1012,6 +1010,7 @@
 
     onEventsChange() {
       this.forceUpdate();
+      this.layoutFromProps();
     }
 
     layoutFromProps() {
@@ -1038,7 +1037,8 @@
         position: index,
         layout: this.layout,
         editComponent: this.props.editComponent,
-        handlers: this.props.dayEventHandlers,
+        onClick: this.props.onDayClick,
+        onDoubleClick: this.props.onDayDoubleClick,
         eventHandlers: this.props.eventHandlers,
         onEventClick: this.props.onEventClick,
         onEventResize: this.props.onEventResize
@@ -1075,7 +1075,8 @@
     onEventClick: PropTypes.func,
     editComponent: PropTypes.func,
     onEventResize: PropTypes.func,
-    dayEventHandlers: PropTypes.object,
+    onDayClick: PropTypes.func,
+    onDayDoubleClick: PropTypes.func,
     highlightDays: PropTypes.oneOfType([PropTypes.array, PropTypes.func])
   };
   Dayz.defaultProps = {
